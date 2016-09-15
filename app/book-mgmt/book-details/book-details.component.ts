@@ -1,0 +1,72 @@
+import {Component, ComponentMetadata, OnInit, ViewChild} from '@angular/core';
+import * as template from './book-details.component.html!text';
+import * as style from './book-details.component.css!text';
+import {BookService, Book} from '../book.service';
+import {ActivatedRoute, Params, Router} from "@angular/router";
+import {NgForm, AbstractControl} from '@angular/forms';
+
+@Component({
+  selector: 'book-details',
+  template: template,
+  styles: [style]
+} as ComponentMetadata)
+export class BookDetailsComponent implements OnInit {
+  @ViewChild('bookForm') currentForm: NgForm;
+
+  currentBook:Book;
+
+  submitted:boolean;
+
+  private static createErrorMessage(errorObject:{[key: string]: any}):string {
+    var errorCode;
+    if (errorObject) {
+      for (errorCode in errorObject) {
+        if (errorObject.hasOwnProperty(errorCode)) {
+          switch (errorCode) {
+            case 'required':
+              return 'Please provide a value';
+            case 'maxlength':
+              return 'The value is too long';
+            default:
+              return 'The value is wrong';
+          }
+        }
+      }
+    }
+  };
+
+  constructor(private bookService:BookService, private route:ActivatedRoute, private router: Router) {
+    this.currentBook = new Book();
+    this.submitted = false;
+  }
+
+  save():void {
+    this.submitted = true;
+    if(this.currentForm && this.currentForm.form && this.currentForm.form.valid) {
+      this.bookService.save(this.currentBook);
+      this.router.navigate(['book-mgmt/books']);
+    }
+  }
+
+  getErrorMessageOfField(fieldName:string):string {
+    const fieldControl:AbstractControl = this.currentForm.form.get(fieldName);
+
+    if (fieldControl && fieldControl.invalid && (fieldControl.touched || this.submitted )) {
+      return BookDetailsComponent.createErrorMessage(fieldControl.errors);
+    }
+  }
+
+  ngOnInit():void {
+    this.route.params.forEach((params:Params) => {
+      if (params['bookId']) {
+        let bookId:number = +params['bookId'];
+        let foundBook:Book = this.bookService.findOne(bookId);
+        if (foundBook) {
+          this.currentBook = foundBook;
+        } else {
+          this.router.navigate(['book-mgmt/book']);
+        }
+      }
+    });
+  }
+}
