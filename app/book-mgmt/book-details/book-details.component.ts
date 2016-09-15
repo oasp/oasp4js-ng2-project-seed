@@ -1,4 +1,4 @@
-import {Component, ComponentMetadata, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import * as template from './book-details.component.html!text';
 import * as style from './book-details.component.css!text';
 import {BookService, Book} from '../book.service';
@@ -9,18 +9,17 @@ import {NgForm, AbstractControl} from '@angular/forms';
   selector: 'book-details',
   template: template,
   styles: [style]
-} as ComponentMetadata)
+} as Component)
 export class BookDetailsComponent implements OnInit {
-  @ViewChild('bookForm') currentForm: NgForm;
+  @ViewChild('bookForm') currentForm:NgForm;
 
   currentBook:Book;
 
   submitted:boolean;
 
-  private static createErrorMessage(errorObject:{[key: string]: any}):string {
-    var errorCode;
+  private static createErrorMessage(errorObject:{[key:string]:any}):string {
     if (errorObject) {
-      for (errorCode in errorObject) {
+      for (let errorCode in errorObject) {
         if (errorObject.hasOwnProperty(errorCode)) {
           switch (errorCode) {
             case 'required':
@@ -35,14 +34,14 @@ export class BookDetailsComponent implements OnInit {
     }
   };
 
-  constructor(private bookService:BookService, private route:ActivatedRoute, private router: Router) {
+  constructor(private bookService:BookService, private route:ActivatedRoute, private router:Router) {
     this.currentBook = new Book();
     this.submitted = false;
   }
 
   save():void {
     this.submitted = true;
-    if(this.currentForm && this.currentForm.form && this.currentForm.form.valid) {
+    if (this.currentForm && this.currentForm.form && this.currentForm.form.valid) {
       this.bookService.save(this.currentBook);
       this.router.navigate(['book-mgmt/books']);
     }

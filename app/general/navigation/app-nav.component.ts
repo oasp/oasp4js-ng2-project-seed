@@ -1,10 +1,10 @@
-import {Component, ComponentMetadataType} from '@angular/core';
+import {Component} from '@angular/core';
 import * as template from './app-nav.component.html!text';
 
 @Component({
   selector: 'app-nav',
   template: template
-} as ComponentMetadataType)
+} as Component)
 export class AppNavComponent {
   navCollapsed:boolean = true;
 

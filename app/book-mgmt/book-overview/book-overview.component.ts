@@ -1,11 +1,11 @@
-import {Component, ComponentMetadataType, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {BookService, Book} from '../book.service';
 import * as template from './book-overview.component.html!text';
 
 @Component({
   selector: 'book-overview',
   template: template
-} as ComponentMetadataType)
+} as Component)
 export class BookOverviewComponent implements OnInit {
   currentBooks:Book[];
 

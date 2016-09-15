@@ -1,8 +1,8 @@
-import {Component, ComponentMetadataType} from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app',
   template: '<app-nav></app-nav><router-outlet></router-outlet>',
-} as ComponentMetadataType)
+} as Component)
 export class AppComponent {
 }

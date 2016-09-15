@@ -1,4 +1,4 @@
-import {NgModule, NgModuleMetadataType}      from '@angular/core';
+import {NgModule}      from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {AppComponent}  from './app.component';
@@ -10,6 +10,6 @@ import {routing} from './app.routing';
   imports: [BrowserModule, BookMgmtModule, GeneralModule, routing],
   declarations: [AppComponent],
   bootstrap: [AppComponent]
-} as NgModuleMetadataType)
+} as NgModule)
 export class AppModule {
 }

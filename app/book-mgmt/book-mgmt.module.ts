@@ -1,4 +1,4 @@
-import {NgModule, NgModuleMetadataType} from '@angular/core';
+import {NgModule} from '@angular/core';
 import {BookOverviewComponent} from './book-overview/book-overview.component';
 import {BrowserModule} from '@angular/platform-browser';
 import {BookService} from './book.service';
@@ -11,6 +11,6 @@ import {FormsModule} from '@angular/forms';
   declarations: [BookOverviewComponent, BookDetailsComponent],
   exports: [BookOverviewComponent, BookDetailsComponent],
   providers: [BookService]
-} as NgModuleMetadataType)
+} as NgModule)
 export class BookMgmtModule {
 }
