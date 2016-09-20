@@ -3,19 +3,19 @@ import * as _ from 'lodash';
 
 @Injectable()
 export class BookService {
-  private books:Book[] = [];
-  private sequencer:number = 1;
+  private books: Book[] = [];
+  private sequencer: number = 1;
 
-  findOne(id:number):Book {
-    var originalBook = this.findById(id);
+  findOne(id: number): Book {
+    const originalBook = this.findById(id);
     if (originalBook) {
       return _.cloneDeep(originalBook);
     }
   }
 
-  save(bookToSave:Book):void {
+  save(bookToSave: Book): void {
     if (bookToSave.id) {
-      let originalBook:Book = this.findById(bookToSave.id);
+      let originalBook: Book = this.findById(bookToSave.id);
       if (originalBook) {
         originalBook.author = bookToSave.author;
         originalBook.title = bookToSave.title;
@@ -26,51 +26,50 @@ export class BookService {
     }
   }
 
-  findAll():Book[] {
+  findAll(): Book[] {
     return this.books;
   }
 
-  private findById(id:number):Book {
-    var i = 0;
-    for (; i < this.books.length; i++) {
-      if (this.books[i].id === id) {
-        return this.books[i];
+  private findById(id: number): Book {
+    for (let book of this.books) {
+      if (book.id === id) {
+        return book;
       }
     }
   };
 }
 
 export class Book {
-  private _id:number;
-  private _author:string;
-  private _title:string;
+  private _id: number;
+  private _author: string;
+  private _title: string;
 
-  constructor(authors?:string, title?:string) {
+  constructor(authors?: string, title?: string) {
     this._author = authors;
     this._title = title;
   }
 
-  get id():number {
+  get id(): number {
     return this._id;
   }
 
-  get author():string {
+  get author(): string {
     return this._author;
   }
 
-  get title():string {
+  get title(): string {
     return this._title;
   }
 
-  set id(value:number) {
+  set id(value: number) {
     this._id = value;
   }
 
-  set title(value:string) {
+  set title(value: string) {
     this._title = value;
   }
 
-  set author(value:string) {
+  set author(value: string) {
     this._author = value;
   }
 }

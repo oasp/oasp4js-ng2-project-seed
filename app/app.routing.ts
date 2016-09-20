@@ -1,9 +1,9 @@
-import {ModuleWithProviders}  from '@angular/core';
+import {ModuleWithProviders} from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
 import {BookOverviewComponent} from './book-mgmt/book-overview/book-overview.component';
-import {BookDetailsComponent} from "./book-mgmt/book-details/book-details.component";
+import {BookDetailsComponent} from './book-mgmt/book-details/book-details.component';
 
-const appRoutes:Routes = [
+const appRoutes: Routes = [
   {
     path: 'book-mgmt/books',
     component: BookOverviewComponent
@@ -23,4 +23,4 @@ const appRoutes:Routes = [
   }
 ] as Routes;
 
-export const routing:ModuleWithProviders = RouterModule.forRoot(appRoutes);
+export const routing: ModuleWithProviders = RouterModule.forRoot(appRoutes);

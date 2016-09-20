@@ -8,9 +8,9 @@
   <link rel="icon" href="favicon.ico">
   <!-- build:css css/styles.css -->
   <link rel="stylesheet" href="css/styles.css">
-  <!-- /build -->
+  <!-- endbuild -->
 
-  <!-- build:remove:prod -->
+  <!-- process:remove:prod -->
   <!-- Polyfill(s) for older browsers -->
   <script src="node_modules/core-js/client/shim.min.js"></script>
 
@@ -24,10 +24,15 @@
       console.error(err);
     });
   </script>
-  <!-- /build -->
+  <!-- /process -->
 </head>
 
 <body class="app">
 <app>Loading...</app>
+<!-- process:remove:dev -->
+<!-- build:js main-sfx.js -->
+<script src="app/main-sfx.js"></script>
+<!-- endbuild -->
+<!-- /process -->
 </body>
 </html>

@@ -1,14 +1,13 @@
 import {Component} from '@angular/core';
-import * as template from './app-nav.component.html!text';
 
 @Component({
   selector: 'app-nav',
-  template: template
+  template: require('./app-nav.component.html!text')
 } as Component)
 export class AppNavComponent {
-  navCollapsed:boolean = true;
+  navCollapsed: boolean = true;
 
-  toggleNavigation():void {
+  toggleNavigation(): void {
     this.navCollapsed = !this.navCollapsed;
   };
 }

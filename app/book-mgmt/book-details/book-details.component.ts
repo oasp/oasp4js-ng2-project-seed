@@ -1,23 +1,21 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import * as template from './book-details.component.html!text';
-import * as style from './book-details.component.css!text';
 import {BookService, Book} from '../book.service';
-import {ActivatedRoute, Params, Router} from "@angular/router";
+import {ActivatedRoute, Params, Router} from '@angular/router';
 import {NgForm, AbstractControl} from '@angular/forms';
 
 @Component({
   selector: 'book-details',
-  template: template,
-  styles: [style]
+  template: require('./book-details.component.html!text'),
+  styles: [require('./book-details.component.css!text')]
 } as Component)
 export class BookDetailsComponent implements OnInit {
-  @ViewChild('bookForm') currentForm:NgForm;
+  @ViewChild('bookForm') currentForm: NgForm;
 
-  currentBook:Book;
+  currentBook: Book;
 
-  submitted:boolean;
+  submitted: boolean;
 
-  private static createErrorMessage(errorObject:{[key:string]:any}):string {
+  private static createErrorMessage(errorObject: {[key: string]: any}): string {
     if (errorObject) {
       for (let errorCode in errorObject) {
         if (errorObject.hasOwnProperty(errorCode)) {
@@ -34,12 +32,12 @@ export class BookDetailsComponent implements OnInit {
     }
   };
 
-  constructor(private bookService:BookService, private route:ActivatedRoute, private router:Router) {
+  constructor(private bookService: BookService, private route: ActivatedRoute, private router: Router) {
     this.currentBook = new Book();
     this.submitted = false;
   }
 
-  save():void {
+  save(): void {
     this.submitted = true;
     if (this.currentForm && this.currentForm.form && this.currentForm.form.valid) {
       this.bookService.save(this.currentBook);
@@ -47,19 +45,19 @@ export class BookDetailsComponent implements OnInit {
     }
   }
 
-  getErrorMessageOfField(fieldName:string):string {
-    const fieldControl:AbstractControl = this.currentForm.form.get(fieldName);
+  getErrorMessageOfField(fieldName: string): string {
+    const fieldControl: AbstractControl = this.currentForm.form.get(fieldName);
 
     if (fieldControl && fieldControl.invalid && (fieldControl.touched || this.submitted )) {
       return BookDetailsComponent.createErrorMessage(fieldControl.errors);
     }
   }
 
-  ngOnInit():void {
-    this.route.params.forEach((params:Params) => {
+  ngOnInit(): void {
+    this.route.params.forEach((params: Params) => {
       if (params['bookId']) {
-        let bookId:number = +params['bookId'];
-        let foundBook:Book = this.bookService.findOne(bookId);
+        let bookId: number = +params['bookId'];
+        let foundBook: Book = this.bookService.findOne(bookId);
         if (foundBook) {
           this.currentBook = foundBook;
         } else {

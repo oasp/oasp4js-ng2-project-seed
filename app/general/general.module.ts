@@ -1,10 +1,10 @@
 import {NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
 import {AppNavComponent} from './navigation/app-nav.component';
-import {RouterModule} from "@angular/router";
+import {RouterModule} from '@angular/router';
+import {CommonModule} from '@angular/common';
 
 @NgModule({
-  imports: [BrowserModule, RouterModule],
+  imports: [CommonModule, RouterModule],
   declarations: [AppNavComponent],
   exports: [AppNavComponent]
 } as NgModule)
