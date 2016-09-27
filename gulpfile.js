@@ -13,6 +13,7 @@ var
   ts = require('gulp-typescript'),
   sourceMaps = require('gulp-sourcemaps'),
   browserSync = require('browser-sync').create(),
+  httpProxy = require('http-proxy'),
   less = require('gulp-less'),
   processHtml = require('gulp-processhtml'),
   historyApiFallback = require('connect-history-api-fallback'),
@@ -22,8 +23,9 @@ var
   rev = require('gulp-rev'),
   gulpIf = require('gulp-if'),
   cleanCss = require('gulp-clean-css'),
-  htmlMin = require('gulp-htmlmin'),
+  rename = require('gulp-rename'),
 
+  htmlMin = require('gulp-htmlmin'),
   htmlMinConfig = {
     collapseWhitespace: true,
     caseSensitive: true,
@@ -59,6 +61,52 @@ var
     new Server(karmaConfig, done).start();
   },
 
+  redirectRestServiceCallsToBackendServer = function () {
+    var
+      changeCookiePathToHandleServerContextPath = function (proxyRes) {
+        if (proxyRes.headers['set-cookie']) {
+          proxyRes.headers['set-cookie'][0] = proxyRes.headers['set-cookie'][0].replace(config.proxy.contextPath, '');
+        }
+      },
+
+      redirectErrors = function (error, req, res) {
+        res.writeHead(500, {
+          'Content-Type': 'text/plain'
+        });
+        console.error('[Proxy] Error response received: ', error);
+      },
+
+      backendServerProxy = httpProxy.createProxyServer({
+        target: config.proxy.url()
+      });
+
+    backendServerProxy.on('error', redirectErrors);
+    backendServerProxy.on('proxyRes', changeCookiePathToHandleServerContextPath);
+
+    return function (req, res, next) {
+      if (new RegExp(config.proxy.serverPathRegExp).test(req.url)) {
+        backendServerProxy.web(req, res);
+      } else {
+        next();
+      }
+    };
+  },
+
+  browserSyncConfigFactory = function (routes) {
+    return {
+      online: false,
+      ghostMode: false,
+      server: {
+        baseDir: [config.currentDistDir()],
+        routes: routes || null,
+        middleware: [
+          redirectRestServiceCallsToBackendServer(),
+          historyApiFallback() // to return index.html while refreshing or bookmarking (HTML5 navigation)
+        ]
+      }
+    };
+  },
+
 // TypeScript project
   tsProject = ts.createProject({
     // these settings comes from tsconfig.json (except for sourceMap; source maps are generated using gulp-sourcemaps)
@@ -84,10 +132,13 @@ var
 // configuration (to be externalized to oasp4js.config.json)
   config = function () {
     var
+      externalConfig = require('./oasp4js.config.json'),
       devMode = true,
-      appDir = 'app',
-      devDir = '.tmp',
-      prodDir = 'dist',
+      appDir = (externalConfig.paths && externalConfig.paths.src) || 'app',
+      devDir = (externalConfig.paths && externalConfig.paths.tmp) || '.tmp',
+      prodDir = (externalConfig.paths && externalConfig.paths.dist) || 'dist',
+      imagesDir = (externalConfig.paths && externalConfig.paths.img) || 'images',
+      fontsDir = (externalConfig.paths && externalConfig.paths.fonts) || 'fonts',
       mainLessPath = 'styles.less',
       lessComponentSources = 'app/**/*.component.less',
       currentDistDir = function () {
@@ -103,11 +154,15 @@ var
       },
       tmpDir: devDir,
       distDir: prodDir,
+      imagesDir: imagesDir,
+      fontsDir: fontsDir,
       isDev: devMode,
       transpiledAppDir: devDir + '/' + appDir,
+      imageSources: appDir + '/**/' + imagesDir + '/**/*.*',
+      fontSources: appDir + '/**/' + fontsDir + '/**/*.*',
       cssDir: devDir + '/' + 'css',
-      fontsDir: function () {
-        return currentDistDir() + '/' + 'fonts';
+      fontsInCurrentDistDir: function () {
+        return currentDistDir() + '/' + fontsDir;
       },
       mainLessPath: mainLessPath,
       mainHtmlPath: 'index.html',
@@ -116,7 +171,22 @@ var
       templateSources: 'app/**/*.html',
       lessSourcesExceptComponentOnes: [mainLessPath, 'app/**/*.less', '!' + lessComponentSources],
       lessComponentSources: lessComponentSources,
-      currentDistDir: currentDistDir
+      currentDistDir: currentDistDir,
+      proxy: {
+        serverPathRegExp: externalConfig.proxy && externalConfig.proxy.servicesPath,
+        baseUrl: externalConfig.proxy && externalConfig.proxy.baseUrl,
+        contextPath: externalConfig.proxy && externalConfig.proxy.context,
+        url: function () {
+          return (this.baseUrl ? this.baseUrl : '') + (this.contextPath ? this.contextPath : '');
+        }
+      },
+      currentBaseHref: function () {
+        var href = '/';
+        if (this.isProd() && this.proxy && this.proxy.contextPath && this.proxy.contextPath !== '/') {
+          href = this.proxy.contextPath + href;
+        }
+        return href;
+      }
     };
   }();
 
@@ -128,9 +198,37 @@ gulp.task('copy-favicon-icon', function () {
     .pipe(gulp.dest(config.currentDistDir()));
 });
 
+gulp.task('copy-images', function () {
+  return gulp.src(config.imageSources)
+    .pipe(rename(function (path) {
+      // e.g.: module/component/images/logos/logo.png -> logos/logo.png
+      path.dirname = path.dirname.replace(new RegExp('(.*)' + config.imagesDir), '');
+    }))
+    .pipe(gulp.dest(config.currentDistDir() + '/' + config.imagesDir));
+});
+
+gulp.task('reload-browser-after-copying-images', ['copy-images'], function (done) {
+  browserSync.reload();
+  done();
+});
+
+gulp.task('copy-fonts', function () {
+  return gulp.src(config.fontSources)
+    .pipe(rename(function (path) {
+      // e.g.: module/component/fonts/my-font.ttf -> my-font.ttf
+      path.dirname = path.dirname.replace(new RegExp('(.*)' + config.fontsDir), '');
+    }))
+    .pipe(gulp.dest(config.fontsInCurrentDistDir()));
+});
+
+gulp.task('reload-browser-after-copying-fonts', ['copy-fonts'], function (done) {
+  browserSync.reload();
+  done();
+});
+
 gulp.task('copy-bootstrap-fonts', function () {
   return gulp.src('node_modules/bootstrap-css-only/fonts/*.{eot,svg,ttf,woff,woff2}')
-    .pipe(gulp.dest(config.fontsDir));
+    .pipe(gulp.dest(config.fontsInCurrentDistDir()));
 });
 
 gulp.task('copy-templates', function () {
@@ -157,7 +255,10 @@ gulp.task('process-main-html-and-copy-it', function () {
   return gulp.src(config.mainHtmlPath)
     .pipe(processHtml({
       commentMarker: 'process', // use <!-- process:... --> comment markers to not conflict with usemin ones: <!-- build:css ... -->
-      environment: config.isProd() ? 'prod' : 'dev'
+      environment: config.isProd() ? 'prod' : 'dev',
+      data: {
+        contextPath: config.currentBaseHref()
+      }
     }))
     .pipe(gulpIf(config.isProd(), usemin({
       path: config.tmpDir,
@@ -185,26 +286,22 @@ gulp.task('reload-browser-after-processing-main-html', ['process-main-html-and-c
   done();
 });
 
-gulp.task('build', ['transpile-ts-to-js', 'process-main-html-and-copy-it', 'compile-main-less-and-copy-it', 'copy-bootstrap-fonts', 'copy-favicon-icon']);
+gulp.task('build', ['transpile-ts-to-js', 'process-main-html-and-copy-it', 'compile-main-less-and-copy-it', 'copy-bootstrap-fonts', 'copy-favicon-icon', 'copy-images', 'copy-fonts']);
 
 gulp.task('serve', ['build'], function () {
-  browserSync.init({
-    online: false,
-    ghostMode: false,
-    server: {
-      baseDir: [config.currentDistDir()],
-      routes: {
-        '/node_modules': 'node_modules',
-        '/systemjs.config.js': 'systemjs.config.js',
-        '/app': 'app' // for getting TypeScript sources from within source maps
-      },
-      middleware: [historyApiFallback()] // to return index.html while refreshing or bookmarking (HTML5 navigation)
-    }
-  });
+  browserSync.init(
+    browserSyncConfigFactory({
+      '/node_modules': 'node_modules',
+      '/systemjs.config.js': 'systemjs.config.js',
+      '/app': 'app' // for getting TypeScript sources from within source maps
+    })
+  );
 
   gulp.watch([config.tsSources, config.templateSources, config.lessComponentSources], ['reload-browser-after-transpilation']);
   gulp.watch([config.lessSourcesExceptComponentOnes], ['compile-main-less-and-copy-it']);
   gulp.watch([config.mainHtmlPath], ['reload-browser-after-processing-main-html']);
+  gulp.watch([config.imageSources], ['reload-browser-after-copying-images']);
+  gulp.watch([config.fontSources], ['reload-browser-after-copying-fonts']);
 });
 
 gulp.task('set-prod-config', function () {
@@ -236,17 +333,10 @@ gulp.task('build-systemjs-self-executable-js', ['transpile-ts-to-js'], function 
   }
 });
 
-gulp.task('build:dist', gulpSync.sync([['set-prod-config'], ['build-systemjs-self-executable-js', 'compile-main-less-and-copy-it', 'copy-bootstrap-fonts', 'copy-favicon-icon'], ['process-main-html-and-copy-it'], ['minify-main-html-in-dist']]));
+gulp.task('build:dist', gulpSync.sync([['set-prod-config'], ['build-systemjs-self-executable-js', 'compile-main-less-and-copy-it', 'copy-bootstrap-fonts', 'copy-favicon-icon', 'copy-images', 'copy-fonts'], ['process-main-html-and-copy-it'], ['minify-main-html-in-dist']]));
 
 gulp.task('serve:dist', ['build:dist'], function () {
-  browserSync.init({
-    online: false,
-    ghostMode: false,
-    server: {
-      baseDir: [config.currentDistDir()],
-      middleware: [historyApiFallback()] // to return index.html while refreshing or bookmarking (HTML5 navigation)
-    }
-  });
+  browserSync.init(browserSyncConfigFactory());
 });
 
 gulp.task('clean', function () {
