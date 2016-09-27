@@ -1896,6 +1896,11 @@
         }
       }
     },
+    "gulp-rename": {
+      "version": "1.2.2",
+      "from": "gulp-rename@>=1.2.2 <2.0.0",
+      "resolved": "https://registry.npmjs.org/gulp-rename/-/gulp-rename-1.2.2.tgz"
+    },
     "gulp-rev": {
       "version": "7.1.2",
       "from": "gulp-rev@*",
