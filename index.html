@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <base href="/">
+  <!-- process:template
+  <base href="<%= contextPath %>">
+  /process -->
   <title>oasp/devon Angular 2 Project Seed</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -30,7 +32,7 @@
 <body class="app">
 <app>Loading...</app>
 <!-- process:remove:dev -->
-<!-- build:js main-sfx.js -->
+<!-- build:js js/main-sfx.js -->
 <script src="app/main-sfx.js"></script>
 <!-- endbuild -->
 <!-- /process -->
