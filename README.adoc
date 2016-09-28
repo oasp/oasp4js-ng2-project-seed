@@ -16,6 +16,8 @@ It is highly recommended to use the following versions:
 * npm 3.3.6
 * Gulp 3.9.1
 
+Please refer to the link:#prerequisites[FAQ section] for details on how to install the prerequisites.
+
 === Install the OASP4JS Angular 2 Project Seed
 
 Clone the `oasp4js-ng2-project-seed` repository:
@@ -61,7 +63,6 @@ gulp build:dist
 Does all what `gulp build` does and additionally minimizes HTML and CSS files as well as concatenates all JavaScript
 files into one file and eventually minimizes and obfuscates it. After executing this task, in the destination directory
 (which defaults to `dist`) you can find an application optimized for production.
-and
 
 === Running
 
@@ -121,7 +122,7 @@ gulp clean
 
 == Frequently Asked Questions
 
-=== How to install the prerequisites?
+=== [[prerequisites]]How to install the prerequisites?
 
 ==== Git
 Check if you have a Git client already installed:
