@@ -132,6 +132,9 @@ git --version
 ----
 
 If your OS can not recognize this command, install Git. For details please refer to http://git-scm.com[this page].
+When installing under Windows, please make sure you check the following option:
+
+- [*] Use git from Windows command prompt
 
 ==== Node.js
 
@@ -154,3 +157,48 @@ gulp --version
 
 '''
 
+=== How to add a new JavaScript library?
+
+As is the case in the https://github.com/angular/quickstart[Angular 2 Quick Start], this project seed uses
+npm for dependency management and https://github.com/systemjs/systemjs[SystemJS] for module loading.
+
+Let us assume you would like to add a very popular JavaScript utility library - https://lodash.com/[lodash]. First
+install it using npm:
+
+----
+npm install lodash --save
+----
+
+The above command downloads the library to your `node_modules` directory and updates the `package.json` file.
+
+Second, let SystemJS know that the library can be imported in your TypeScript files; add this to the `systemjs.config.json` file:
+
+----
+map: {
+  ...
+  'lodash': 'npm:lodash'
+}
+packages: {
+  ...
+  'lodash': {
+    main: './index.js',
+    defaultExtension: 'js'
+  }
+}
+----
+
+Third, import the library in your TypeScript class and use it:
+
+----
+import * as _ from 'lodash';
+
+export class MyClass {
+  myMethod(): void {
+    ...
+    _.cloneDeep({name: 'John'});
+  }
+}
+----
+
+
+'''
