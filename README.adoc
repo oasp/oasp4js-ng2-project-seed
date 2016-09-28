@@ -173,6 +173,7 @@ The above command downloads the library to your `node_modules` directory and upd
 
 Second, let SystemJS know that the library can be imported in your TypeScript files; add this to the `systemjs.config.json` file:
 
+[source,javascript]
 ----
 map: {
   ...
@@ -189,6 +190,7 @@ packages: {
 
 Third, import the library in your TypeScript class and use it:
 
+[source,javascript]
 ----
 import * as _ from 'lodash';
 
