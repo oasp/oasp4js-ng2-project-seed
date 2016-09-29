@@ -219,10 +219,13 @@ as any dependencies to it (from tasks `build` and `build:dist`).
 
 . Install Angular Material:
 .. Install npm dependency
+
    ----
    npm install angular-material --save
    ----
+
 .. Update `systemjs.config.js`:
+
    [source,javascript]
    ----
    ...
@@ -232,7 +235,9 @@ as any dependencies to it (from tasks `build` and `build:dist`).
    }
    ...
    ----
+
 .. Import Angular Material in the `AppModule` module (`app.module.ts`):
+
    [source,javascript]
    ----
    ...
@@ -246,4 +251,5 @@ as any dependencies to it (from tasks `build` and `build:dist`).
    export class AppModule {
    }
    ----
+
 '''
