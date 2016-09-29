@@ -209,9 +209,9 @@ export class MyClass {
 . Uninstalling Bootstrap:
 .. Uninstall npm dependency:
 
-    ----
+   ----
     npm uninstall bootstrap-css-only --save
-    ----
+   ----
 
 .. Remove copying bootstrap fonts while building from `gulpfile.js`: remove the `copy-bootstrap-fonts` task itself as well
 as any dependencies to it (from tasks `build` and `build:dist`).
@@ -219,35 +219,31 @@ as any dependencies to it (from tasks `build` and `build:dist`).
 
 . Install Angular Material:
 .. Install npm dependency
-
-----
-npm install angular-material --save
-----
-
+   ----
+   npm install angular-material --save
+   ----
 .. Update `systemjs.config.js`:
-
-[source,javascript]
-----
-...
-map: {
-  ...
-  '@angular/material': 'npm:@angular/material/material.umd.js'
-}
-...
-----
-
+   [source,javascript]
+   ----
+   ...
+   map: {
+     ...
+     '@angular/material': 'npm:@angular/material/material.umd.js'
+   }
+   ...
+   ----
 .. Import Angular Material in the `AppModule` module (`app.module.ts`):
-[source,javascript]
-----
-...
-import {MaterialModule} from '@angular/material';
+   [source,javascript]
+   ----
+   ...
+   import {MaterialModule} from '@angular/material';
 
-@NgModule({
-  imports: [..., MaterialModule.forRoot()],
-  declarations: [AppComponent],
-  bootstrap: [AppComponent]
-} as NgModule)
-export class AppModule {
-}
-----
+   @NgModule({
+     imports: [..., MaterialModule.forRoot()],
+     declarations: [AppComponent],
+     bootstrap: [AppComponent]
+   } as NgModule)
+   export class AppModule {
+   }
+   ----
 '''
