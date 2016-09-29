@@ -206,50 +206,45 @@ export class MyClass {
 
 === How to replace Bootstrap with Angular Material?
 
-. Uninstalling Bootstrap:
-.. Uninstall npm dependency:
+Uninstall Bootstrap npm dependency:
+----
+npm uninstall bootstrap-css-only --save
+----
 
-   ----
-    npm uninstall bootstrap-css-only --save
-   ----
-
-.. Remove copying bootstrap fonts while building from `gulpfile.js`: remove the `copy-bootstrap-fonts` task itself as well
+Remove copying bootstrap fonts while building from `gulpfile.js`: remove the `copy-bootstrap-fonts` task itself as well
 as any dependencies to it (from tasks `build` and `build:dist`).
-.. Remove importing Bootstrap from `styles.less`.
 
-. Install Angular Material:
-.. Install npm dependency
+Remove importing Bootstrap from `styles.less`.
 
-   ----
-   npm install angular-material --save
-   ----
+Install Angular Material npm dependency:
+----
+npm install angular-material --save
+----
 
-.. Update `systemjs.config.js`:
+Update `systemjs.config.js`:
+[source,javascript]
+----
+...
+map: {
+  ...
+  '@angular/material': 'npm:@angular/material/material.umd.js'
+}
+...
+----
 
-   [source,javascript]
-   ----
-   ...
-   map: {
-     ...
-     '@angular/material': 'npm:@angular/material/material.umd.js'
-   }
-   ...
-   ----
+Import Angular Material in the `AppModule` module (`app.module.ts`):
+[source,javascript]
+----
+...
+import {MaterialModule} from '@angular/material';
 
-.. Import Angular Material in the `AppModule` module (`app.module.ts`):
-
-   [source,javascript]
-   ----
-   ...
-   import {MaterialModule} from '@angular/material';
-
-   @NgModule({
-     imports: [..., MaterialModule.forRoot()],
-     declarations: [AppComponent],
-     bootstrap: [AppComponent]
-   } as NgModule)
-   export class AppModule {
-   }
-   ----
+@NgModule({
+  imports: [..., MaterialModule.forRoot()],
+  declarations: [AppComponent],
+  bootstrap: [AppComponent]
+} as NgModule)
+export class AppModule {
+}
+----
 
 '''
