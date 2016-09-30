@@ -250,7 +250,7 @@ gulp.task('compile-main-less-and-copy-it', function () {
     .pipe(browserSync.stream());
 });
 
-gulp.task('compile-main-sass-and-copy-it', function () {
+gulp.task('compile-main-sass-and-copy-it', ['clean-ng2-material'], function () {
   return gulp.src(config.mainSassPath)
     .pipe(sass().on('error', sass.logError))
     .pipe(gulp.dest(config.cssDir))
@@ -394,3 +394,8 @@ gulp.task('lint', function () {
 });
 
 gulp.task('default', gulpSync.sync(['clean', 'serve']));
+
+gulp.task('clean-ng2-material', function () { // to be deleted once https://github.com/angular/material2/issues/1348 is closed
+  return gulp.src('node_modules/@angular/material/core/overlay/overlay.css', {read: false})
+    .pipe(clean({force: true}));
+});
