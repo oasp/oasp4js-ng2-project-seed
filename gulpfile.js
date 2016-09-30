@@ -15,6 +15,7 @@ var
   browserSync = require('browser-sync').create(),
   httpProxy = require('http-proxy'),
   less = require('gulp-less'),
+  sass = require('gulp-sass'),
   processHtml = require('gulp-processhtml'),
   historyApiFallback = require('connect-history-api-fallback'),
   currentTsTranspiler = require('typescript'),
@@ -57,7 +58,7 @@ var
       karmaConfig.browsers = ['PhantomJS'];
     }
 
-    gulp.watch([config.tsSources, config.templateSources, config.lessComponentSources], ['transpile-ts-to-js-4-tests']);
+    gulp.watch([config.tsSources, config.templateSources, config.lessComponentSources, config.sassComponentSources], ['transpile-ts-to-js-4-tests']);
     new Server(karmaConfig, done).start();
   },
 
@@ -140,7 +141,9 @@ var
       imagesDir = (externalConfig.paths && externalConfig.paths.img) || 'images',
       fontsDir = (externalConfig.paths && externalConfig.paths.fonts) || 'fonts',
       mainLessPath = 'styles.less',
+      mainSassPath = 'styles.scss',
       lessComponentSources = 'app/**/*.component.less',
+      sassComponentSources = 'app/**/*.component.scss',
       currentDistDir = function () {
         return devMode ? devDir : prodDir;
       };
@@ -165,12 +168,15 @@ var
         return currentDistDir() + '/' + fontsDir;
       },
       mainLessPath: mainLessPath,
+      mainSassPath: mainSassPath,
       mainHtmlPath: 'index.html',
       tsSources: 'app/**/*.ts',
       tsSources4Test: devDir + '/' + 'app/**/*.ts',
       templateSources: 'app/**/*.html',
       lessSourcesExceptComponentOnes: [mainLessPath, 'app/**/*.less', '!' + lessComponentSources],
+      sassSourcesExceptComponentOnes: [mainSassPath, 'app/**/*.scss', '!' + sassComponentSources],
       lessComponentSources: lessComponentSources,
+      sassComponentSources: sassComponentSources,
       currentDistDir: currentDistDir,
       proxy: {
         serverPathRegExp: externalConfig.proxy && externalConfig.proxy.servicesPath,
@@ -244,9 +250,23 @@ gulp.task('compile-main-less-and-copy-it', function () {
     .pipe(browserSync.stream());
 });
 
+gulp.task('compile-main-sass-and-copy-it', function () {
+  return gulp.src(config.mainSassPath)
+    .pipe(sass().on('error', sass.logError))
+    .pipe(gulp.dest(config.cssDir))
+    .pipe(browserSync.stream());
+});
+
 gulp.task('compile-component-less-styles-and-copy-them', function () {
   return gulp.src(config.lessComponentSources)
     .pipe(less())
+    .pipe(gulpIf(config.isProd(), cleanCss()))
+    .pipe(gulp.dest(config.transpiledAppDir));
+});
+
+gulp.task('compile-component-sass-styles-and-copy-them', function () {
+  return gulp.src(config.sassComponentSources)
+    .pipe(sass().on('error', sass.logError))
     .pipe(gulpIf(config.isProd(), cleanCss()))
     .pipe(gulp.dest(config.transpiledAppDir));
 });
@@ -268,11 +288,11 @@ gulp.task('process-main-html-and-copy-it', function () {
     .pipe(gulp.dest(config.currentDistDir()));
 });
 
-gulp.task('transpile-ts-to-js', ['copy-templates', 'compile-component-less-styles-and-copy-them'], function () {
+gulp.task('transpile-ts-to-js', ['copy-templates', 'compile-component-less-styles-and-copy-them', 'compile-component-sass-styles-and-copy-them'], function () {
   return transpileTsToJs('/app');
 });
 
-gulp.task('transpile-ts-to-js-4-tests', ['copy-templates', 'compile-component-less-styles-and-copy-them'], function () {
+gulp.task('transpile-ts-to-js-4-tests', ['copy-templates', 'compile-component-less-styles-and-copy-them', 'compile-component-sass-styles-and-copy-them'], function () {
   return transpileTsToJs('/base/app');
 });
 
@@ -286,7 +306,7 @@ gulp.task('reload-browser-after-processing-main-html', ['process-main-html-and-c
   done();
 });
 
-gulp.task('build', ['transpile-ts-to-js', 'process-main-html-and-copy-it', 'compile-main-less-and-copy-it', 'copy-bootstrap-fonts', 'copy-favicon-icon', 'copy-images', 'copy-fonts']);
+gulp.task('build', ['transpile-ts-to-js', 'process-main-html-and-copy-it', 'compile-main-less-and-copy-it', 'compile-main-sass-and-copy-it', 'copy-bootstrap-fonts', 'copy-favicon-icon', 'copy-images', 'copy-fonts']);
 
 gulp.task('serve', ['build'], function () {
   browserSync.init(
@@ -297,8 +317,9 @@ gulp.task('serve', ['build'], function () {
     })
   );
 
-  gulp.watch([config.tsSources, config.templateSources, config.lessComponentSources], ['reload-browser-after-transpilation']);
+  gulp.watch([config.tsSources, config.templateSources, config.lessComponentSources, config.sassComponentSources], ['reload-browser-after-transpilation']);
   gulp.watch([config.lessSourcesExceptComponentOnes], ['compile-main-less-and-copy-it']);
+  gulp.watch([config.sassSourcesExceptComponentOnes], ['compile-main-sass-and-copy-it']);
   gulp.watch([config.mainHtmlPath], ['reload-browser-after-processing-main-html']);
   gulp.watch([config.imageSources], ['reload-browser-after-copying-images']);
   gulp.watch([config.fontSources], ['reload-browser-after-copying-fonts']);
@@ -333,7 +354,7 @@ gulp.task('build-systemjs-self-executable-js', ['transpile-ts-to-js'], function 
   }
 });
 
-gulp.task('build:dist', gulpSync.sync([['set-prod-config'], ['build-systemjs-self-executable-js', 'compile-main-less-and-copy-it', 'copy-bootstrap-fonts', 'copy-favicon-icon', 'copy-images', 'copy-fonts'], ['process-main-html-and-copy-it'], ['minify-main-html-in-dist']]));
+gulp.task('build:dist', gulpSync.sync([['set-prod-config'], ['build-systemjs-self-executable-js', 'compile-main-less-and-copy-it', 'compile-main-sass-and-copy-it', 'copy-bootstrap-fonts', 'copy-favicon-icon', 'copy-images', 'copy-fonts'], ['process-main-html-and-copy-it'], ['minify-main-html-in-dist']]));
 
 gulp.task('serve:dist', ['build:dist'], function () {
   browserSync.init(browserSyncConfigFactory());
