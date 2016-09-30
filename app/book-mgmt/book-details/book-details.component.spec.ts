@@ -9,6 +9,7 @@ import {BookService, Book} from '../book.service';
 import {ComponentFixture} from '@angular/core/testing/component_fixture';
 import {Observable} from 'rxjs/Observable';
 import {RouterTestingModule} from '@angular/router/testing';
+import {MaterialModule} from '@angular/material';
 
 ////////  SPECS  /////////////
 
@@ -27,7 +28,7 @@ describe('BookDetailsComponent', function () {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [FormsModule, RouterTestingModule],
+      imports: [FormsModule, RouterTestingModule, MaterialModule],
       declarations: [BookDetailsComponent],
       providers: [
         BookService,

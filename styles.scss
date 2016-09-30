@@ -1,0 +1,100 @@
+// reset
+body.app {
+  margin: 0;
+}
+
+@import 'node_modules/@angular/material/core/theming/all-theme';
+
+@include md-core();
+
+$primary: md-palette($md-deep-purple);
+$accent: md-palette($md-amber, A200, A100, A400);
+$warn: md-palette($md-red);
+$theme: md-light-theme($primary, $accent, $warn);
+
+@include angular-material-theme($theme);
+
+.app {
+  app-nav ul li {
+    list-style: none;
+    a {
+      font-family: Roboto, "Helvetica Neue", sans-serif;
+      text-decoration: none;
+    }
+  }
+
+  md-sidenav app-nav ul {
+    padding-left: 10px;
+    li {
+      display: block;
+      margin-bottom: 10px;
+    }
+  }
+
+  md-toolbar app-nav ul li {
+    display: inline-block;
+    a {
+      color: white;
+    }
+    ::after {
+      content: " |";
+    }
+  }
+
+  .app-content {
+    padding: 20px;
+  }
+
+  .app-content md-card {
+    margin: 20px;
+  }
+
+  .app-sidenav {
+    padding: 10px;
+    min-width: 100px;
+  }
+
+  .app-toolbar-filler {
+    flex: 1 1 auto;
+  }
+
+  .app-toolbar-menu {
+    padding: 0 14px 0 14px;
+    color: white;
+  }
+
+  .app-icon-button {
+    box-shadow: none;
+    user-select: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    filter: none;
+    font-weight: normal;
+    height: auto;
+    line-height: inherit;
+    margin: 0;
+    min-width: 0;
+    padding: 0;
+    text-align: left;
+    text-decoration: none;
+  }
+
+  md-hint.error-msg {
+    color: md-color($warn);
+  }
+
+  .m2app-dark {
+    $dark-primary: md-palette($md-pink, 700, 500, 900);
+    $dark-accent: md-palette($md-blue-grey, A200, A100, A400);
+    $dark-warn: md-palette($md-deep-orange);
+
+    $dark-theme: md-dark-theme($dark-primary, $dark-accent, $dark-warn);
+
+    @include angular-material-theme($dark-theme);
+
+    md-hint.error-msg {
+      color: md-color($dark-warn);
+    }
+  }
+}

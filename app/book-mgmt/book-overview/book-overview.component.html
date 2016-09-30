@@ -1,21 +1,14 @@
-<section class="container-fluid">
+<md-card>
   <section [hidden]="thereAreBooksToDisplay()">
     <p>No books available. <a routerLink="/book-mgmt/book">Add a new one</a>.</p>
   </section>
   <section [hidden]="!thereAreBooksToDisplay()">
-    <table class="table table-striped">
-      <tbody>
-      <tr>
-        <th>Author</th>
-        <th>Title</th>
-        <th>&nbsp;</th>
-      </tr>
-      <tr *ngFor="let book of currentBooks">
-        <td>{{book.author}}</td>
-        <td>{{book.title}}</td>
-        <td><a [routerLink]="['/book-mgmt/book', book.id]">Details</a></td>
-      </tr>
-      </tbody>
-    </table>
+    <md-list>
+      <md-list-item *ngFor="let book of currentBooks">
+        <a md-list-avatar [routerLink]="['/book-mgmt/book', book.id]"><md-icon>book</md-icon></a>
+        <h3 md-line class="book-title"> {{book.title}} </h3>
+        <p md-line> {{book.author}} </p>
+      </md-list-item>
+    </md-list>
   </section>
-</section>
+</md-card>

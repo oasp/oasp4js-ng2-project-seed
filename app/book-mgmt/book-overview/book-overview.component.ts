@@ -3,7 +3,8 @@ import {BookService, Book} from '../book.service';
 
 @Component({
   selector: 'book-overview',
-  template: require('./book-overview.component.html!text')
+  template: require('./book-overview.component.html!text'),
+  styles: [require('./book-overview.component.css!text')]
 } as Component)
 export class BookOverviewComponent implements OnInit {
   currentBooks: Book[];

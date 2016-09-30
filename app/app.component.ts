@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'app',
-  template: '<app-nav></app-nav><router-outlet></router-outlet>',
+  template: require('./app.component.html!text'),
 } as Component)
 export class AppComponent {
 }

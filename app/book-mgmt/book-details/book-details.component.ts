@@ -45,6 +45,14 @@ export class BookDetailsComponent implements OnInit {
     }
   }
 
+  getErrorColorIfFieldNotValid(fieldName: string): string {
+    const fieldControl: AbstractControl = this.currentForm.form.get(fieldName);
+    if (fieldControl && fieldControl.invalid && (fieldControl.touched || this.submitted )) {
+      return 'warn';
+    }
+    return 'primary';
+  }
+
   getErrorMessageOfField(fieldName: string): string {
     const fieldControl: AbstractControl = this.currentForm.form.get(fieldName);
 

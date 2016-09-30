@@ -6,6 +6,7 @@ import {BookMgmtModule} from './book-mgmt/book-mgmt.module';
 import {Type} from '@angular/core';
 import {RouterTestingModule} from '@angular/router/testing';
 import {ComponentFixture} from '@angular/core/testing/component_fixture';
+import {MaterialModule} from '@angular/material';
 
 describe('AppComponent with TCB', function () {
   let fixture: ComponentFixture<AppComponent>;
@@ -13,7 +14,7 @@ describe('AppComponent with TCB', function () {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [BookMgmtModule, GeneralModule, RouterTestingModule],
+      imports: [BookMgmtModule, GeneralModule, RouterTestingModule, MaterialModule],
       declarations: [AppComponent]
     }).compileComponents().then(() => {
       fixture = TestBed.createComponent(AppComponent as Type<AppComponent>);

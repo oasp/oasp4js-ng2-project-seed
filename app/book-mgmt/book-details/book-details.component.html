@@ -1,35 +1,28 @@
-<section class="book-details container-fluid">
+<md-card class="book-details">
   <form #bookForm="ngForm" (ngSubmit)="save()" [class.ng-submitted]="submitted" novalidate>
     <div class="row">
-      <div class="col-md-1 col-sm-3 col-xs-4 form-label">
-        <label for="title">Title:</label>
-      </div>
-      <div class="col-md-3 col-sm-5 col-xs-6">
-        <input id="title" name="titleField" type="text" [(ngModel)]="currentBook.title" required maxlength="50">
-        <span class="error-msg">
-          {{ getErrorMessageOfField('titleField') }}
-        </span>
-      </div>
-    </div>
+      <md-input #title name="titleField" [(ngModel)]="currentBook.title" required maxlength="50" placeholder="Title"
+                [dividerColor]="getErrorColorIfFieldNotValid('titleField')">
+        <md-hint class="error-msg" align="start">
+          {{getErrorMessageOfField('titleField')}}
+        </md-hint>
+        <md-hint align="end">
+          {{title.characterCount}} / 50
+        </md-hint>
+      </md-input>
 
-    <div class="row">
-      <div class="col-md-1 col-sm-3 col-xs-4 form-label">
-        <label for="author">Author:</label>
-      </div>
-      <div class="col-md-3 col-sm-5 col-xs-6">
-        <input id="author" name="authorField" type="text" [(ngModel)]="currentBook.author" required maxlength="15">
-        <span class="error-msg">
-          {{ getErrorMessageOfField('authorField') }}
-        </span>
-      </div>
+      <md-input #author name="authorField" [(ngModel)]="currentBook.author" required maxlength="15" placeholder="Author"
+                [dividerColor]="getErrorColorIfFieldNotValid('authorField')">
+        <md-hint class="error-msg" align="start">
+          {{getErrorMessageOfField('authorField')}}
+        </md-hint>
+        <md-hint align="end">
+          {{author.characterCount}} / 15
+        </md-hint>
+      </md-input>
     </div>
-
     <div class="row">
-      <div class="col-md-1 col-sm-3 col-xs-4">
-      </div>
-      <div class="col-md-3 col-sm-5 col-xs-6">
-        <button type="submit" class="btn btn-primary">Save</button>
-      </div>
+      <button md-raised-button color="primary" type="submit" >Save</button>
     </div>
   </form>
-</section>
+</md-card>

@@ -5,9 +5,10 @@ import {AppComponent}  from './app.component';
 import {GeneralModule} from './general/general.module';
 import {BookMgmtModule} from './book-mgmt/book-mgmt.module';
 import {routing} from './app.routing';
+import {MaterialModule} from '@angular/material';
 
 @NgModule({
-  imports: [BrowserModule, BookMgmtModule, GeneralModule, routing],
+  imports: [BrowserModule, BookMgmtModule, GeneralModule, routing, MaterialModule.forRoot()],
   declarations: [AppComponent],
   bootstrap: [AppComponent]
 } as NgModule)
