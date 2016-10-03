@@ -62,6 +62,7 @@ module.exports = function(config) {
       // (these paths need to be rewritten, see proxies section)
       {pattern: appBase + '**/*.html', included: false, watched: true},
       {pattern: appBase + '**/*.css', included: false, watched: true},
+      {pattern: '.tmp/images/' + '**/*.css', included: false, watched: true},
 
       // Paths for debugging with source maps in dev tools
       {pattern: appSrcBase + '**/*.ts', included: false, watched: false},
@@ -71,7 +72,8 @@ module.exports = function(config) {
     // Proxied base paths for loading assets
     proxies: {
       // required for component assets fetched by Angular's compiler
-      '/.tmp/app/': appAssets
+      '/.tmp/app/': appAssets,
+      '/.tmp/images/': 'base/.tmp/images/'
     },
 
     exclude: [],
