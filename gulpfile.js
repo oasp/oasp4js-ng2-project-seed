@@ -142,8 +142,8 @@ var
       fontsDir = (externalConfig.paths && externalConfig.paths.fonts) || 'fonts',
       mainLessPath = 'styles.less',
       mainSassPath = 'styles.scss',
-      lessComponentSources = 'app/**/*.component.less',
-      sassComponentSources = 'app/**/*.component.scss',
+      lessComponentSources = appDir + '/**/*.component.less',
+      sassComponentSources = appDir + '/**/*.component.scss',
       currentDistDir = function () {
         return devMode ? devDir : prodDir;
       };
@@ -156,6 +156,7 @@ var
         return !devMode;
       },
       tmpDir: devDir,
+      srcDir: appDir,
       distDir: prodDir,
       imagesDir: imagesDir,
       fontsDir: fontsDir,
@@ -170,14 +171,17 @@ var
       mainLessPath: mainLessPath,
       mainSassPath: mainSassPath,
       mainHtmlPath: 'index.html',
-      tsSources: 'app/**/*.ts',
-      tsSources4Test: devDir + '/' + 'app/**/*.ts',
-      templateSources: 'app/**/*.html',
-      lessSourcesExceptComponentOnes: [mainLessPath, 'app/**/*.less', '!' + lessComponentSources],
-      sassSourcesExceptComponentOnes: [mainSassPath, 'app/**/*.scss', '!' + sassComponentSources],
+      tsSources: appDir + '/**/*.ts',
+      tsSources4Test: devDir + '/' + appDir + '/**/*.ts',
+      templateSources: appDir + '/**/*.html',
+      lessSourcesExceptComponentOnes: [mainLessPath, appDir + '/**/*.less', '!' + lessComponentSources],
+      sassSourcesExceptComponentOnes: [mainSassPath, appDir + '/**/*.scss', '!' + sassComponentSources],
       lessComponentSources: lessComponentSources,
       sassComponentSources: sassComponentSources,
       currentDistDir: currentDistDir,
+      currentEnvFile: function () {
+        return 'environment.' + (this.isProd() ? 'prod' : 'dev')  + '.ts';
+      },
       proxy: {
         serverPathRegExp: externalConfig.proxy && externalConfig.proxy.servicesPath,
         baseUrl: externalConfig.proxy && externalConfig.proxy.baseUrl,
@@ -250,7 +254,7 @@ gulp.task('compile-main-less-and-copy-it', function () {
     .pipe(browserSync.stream());
 });
 
-gulp.task('compile-main-sass-and-copy-it', ['clean-ng2-material'], function () {
+gulp.task('compile-main-sass-and-copy-it', function () {
   return gulp.src(config.mainSassPath)
     .pipe(sass().on('error', sass.logError))
     .pipe(gulp.dest(config.cssDir))
@@ -288,12 +292,22 @@ gulp.task('process-main-html-and-copy-it', function () {
     .pipe(gulp.dest(config.currentDistDir()));
 });
 
-gulp.task('transpile-ts-to-js', ['copy-templates', 'compile-component-less-styles-and-copy-them', 'compile-component-sass-styles-and-copy-them'], function () {
-  return transpileTsToJs('/app');
+gulp.task('copy-env-file', function () {
+  var envDir = config.srcDir + '/_env/';
+  return gulp.src(envDir + config.currentEnvFile())
+    .pipe(rename(function (path) {
+      path.basename = 'environment';
+    }))
+    .pipe(gulp.dest(envDir));
+
 });
 
-gulp.task('transpile-ts-to-js-4-tests', ['copy-templates', 'compile-component-less-styles-and-copy-them', 'compile-component-sass-styles-and-copy-them'], function () {
-  return transpileTsToJs('/base/app');
+gulp.task('transpile-ts-to-js', ['copy-templates', 'copy-env-file', 'compile-component-less-styles-and-copy-them', 'compile-component-sass-styles-and-copy-them'], function () {
+  return transpileTsToJs('/' + config.srcDir);
+});
+
+gulp.task('transpile-ts-to-js-4-tests', ['copy-templates', 'copy-env-file', 'compile-component-less-styles-and-copy-them', 'compile-component-sass-styles-and-copy-them'], function () {
+  return transpileTsToJs('/base/' + config.srcDir);
 });
 
 gulp.task('reload-browser-after-transpilation', ['transpile-ts-to-js'], function (done) {
@@ -313,7 +327,7 @@ gulp.task('serve', ['build'], function () {
     browserSyncConfigFactory({
       '/node_modules': 'node_modules',
       '/systemjs.config.js': 'systemjs.config.js',
-      '/app': 'app' // for getting TypeScript sources from within source maps
+      '/app': config.srcDir // for getting TypeScript sources from within source maps
     })
   );
 
@@ -336,7 +350,7 @@ gulp.task('minify-main-html-in-dist', function () {
 });
 
 gulp.task('build-systemjs-self-executable-js', ['transpile-ts-to-js'], function (done) {
-  oasp4js.currentAppDir = '.tmp/app';
+  oasp4js.currentAppDir = config.transpiledAppDir;
   try {
     new Builder('.', './systemjs.config.js')
       .buildStatic(
@@ -354,7 +368,11 @@ gulp.task('build-systemjs-self-executable-js', ['transpile-ts-to-js'], function 
   }
 });
 
-gulp.task('build:dist', gulpSync.sync([['set-prod-config'], ['build-systemjs-self-executable-js', 'compile-main-less-and-copy-it', 'compile-main-sass-and-copy-it', 'copy-bootstrap-fonts', 'copy-favicon-icon', 'copy-images', 'copy-fonts'], ['process-main-html-and-copy-it'], ['minify-main-html-in-dist']]));
+gulp.task('build:dist', gulpSync.sync([
+  ['set-prod-config'],
+  ['build-systemjs-self-executable-js', 'compile-main-less-and-copy-it', 'compile-main-sass-and-copy-it', 'copy-bootstrap-fonts', 'copy-favicon-icon', 'copy-images', 'copy-fonts'],
+  ['process-main-html-and-copy-it'],
+  ['minify-main-html-in-dist']]));
 
 gulp.task('serve:dist', ['build:dist'], function () {
   browserSync.init(browserSyncConfigFactory());
@@ -369,7 +387,7 @@ gulp.task('test:tdd', ['transpile-ts-to-js-4-tests'], function (done) {
   runKarmaTestsAndWatchForChanges(true, done);
 });
 
-gulp.task('test:tdd:debug', ['transpile-ts-to-js-4-tests'], function (done) {
+gulp.task('test:tdd:debug', ['transpile-ts-to-js-4-tests', 'copy-images'], function (done) {
   runKarmaTestsAndWatchForChanges(false, done);
 });
 

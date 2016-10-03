@@ -8,9 +8,10 @@ link-checker-results.txt
 *.js.map
 e2e/**/*.js
 e2e/**/*.js.map
-_test-output
-_temp
+test-output
 .tmp
+dist
+environment.ts
 
 !karma*.js
 !gulp*.js
