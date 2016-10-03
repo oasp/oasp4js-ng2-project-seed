@@ -23,7 +23,7 @@ Please refer to the link:#prerequisites[FAQ section] for details on how to insta
 Clone the `oasp4js-ng2-project-seed` repository:
 
 ....
-git clone https://github.com/devonfw/oasp4js-ng2-project-seed.git
+git clone https://github.com/oasp/oasp4js-ng2-project-seed.git
 ....
 
 Install all node.js dependencies (this may take several minutes when doing for the first time):
