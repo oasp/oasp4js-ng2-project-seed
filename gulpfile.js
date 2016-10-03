@@ -236,11 +236,6 @@ gulp.task('reload-browser-after-copying-fonts', ['copy-fonts'], function (done) 
   done();
 });
 
-gulp.task('copy-bootstrap-fonts', function () {
-  return gulp.src('node_modules/bootstrap-css-only/fonts/*.{eot,svg,ttf,woff,woff2}')
-    .pipe(gulp.dest(config.fontsInCurrentDistDir()));
-});
-
 gulp.task('copy-templates', function () {
   return gulp.src(config.templateSources)
     .pipe(gulpIf(config.isProd(), htmlMin(htmlMinConfig)))
@@ -254,7 +249,7 @@ gulp.task('compile-main-less-and-copy-it', function () {
     .pipe(browserSync.stream());
 });
 
-gulp.task('compile-main-sass-and-copy-it', function () {
+gulp.task('compile-main-sass-and-copy-it', ['clean-ng2-material'], function () {
   return gulp.src(config.mainSassPath)
     .pipe(sass().on('error', sass.logError))
     .pipe(gulp.dest(config.cssDir))
@@ -320,7 +315,7 @@ gulp.task('reload-browser-after-processing-main-html', ['process-main-html-and-c
   done();
 });
 
-gulp.task('build', ['transpile-ts-to-js', 'process-main-html-and-copy-it', 'compile-main-less-and-copy-it', 'compile-main-sass-and-copy-it', 'copy-bootstrap-fonts', 'copy-favicon-icon', 'copy-images', 'copy-fonts']);
+gulp.task('build', ['transpile-ts-to-js', 'process-main-html-and-copy-it', 'compile-main-less-and-copy-it', 'compile-main-sass-and-copy-it', 'copy-favicon-icon', 'copy-images', 'copy-fonts']);
 
 gulp.task('serve', ['build'], function () {
   browserSync.init(
@@ -370,7 +365,7 @@ gulp.task('build-systemjs-self-executable-js', ['transpile-ts-to-js'], function 
 
 gulp.task('build:dist', gulpSync.sync([
   ['set-prod-config'],
-  ['build-systemjs-self-executable-js', 'compile-main-less-and-copy-it', 'compile-main-sass-and-copy-it', 'copy-bootstrap-fonts', 'copy-favicon-icon', 'copy-images', 'copy-fonts'],
+  ['build-systemjs-self-executable-js', 'compile-main-less-and-copy-it', 'compile-main-sass-and-copy-it', 'copy-favicon-icon', 'copy-images', 'copy-fonts'],
   ['process-main-html-and-copy-it'],
   ['minify-main-html-in-dist']]));
 
