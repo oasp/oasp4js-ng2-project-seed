@@ -1,6 +1,6 @@
 {
   "name": "oasp-ng2-project-seed",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "OASP4JS Angular 2 Project Seed",
   "scripts": {
     "start": "gulp",
