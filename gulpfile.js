@@ -37,7 +37,7 @@ var
   transpileTsToJs = function (sourceRoot) {
     var tsResult = gulp.src(config.tsSources)
       .pipe(sourceMaps.init())
-      .pipe(ts(tsProject));
+      .pipe(tsProject());
 
     return tsResult.js
       .pipe(sourceMaps.write('.', {
@@ -121,7 +121,6 @@ var
     suppressImplicitAnyIndexErrors: true,
     // these settings are specific to gulp-typescript
     declaration: false,
-    noExternalResolve: false,
     typescript: currentTsTranspiler
   }),
 
@@ -180,7 +179,7 @@ var
       sassComponentSources: sassComponentSources,
       currentDistDir: currentDistDir,
       currentEnvFile: function () {
-        return 'environment.' + (this.isProd() ? 'prod' : 'dev')  + '.ts';
+        return 'environment.' + (this.isProd() ? 'prod' : 'dev') + '.ts';
       },
       proxy: {
         serverPathRegExp: externalConfig.proxy && externalConfig.proxy.servicesPath,
