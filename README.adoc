@@ -120,6 +120,24 @@ Lints your source code (using https://palantir.github.io/tslint/[TSLint]).
 gulp clean
 ....
 
+=== Environment specific behaviour
+
+In the `app\_env` directory you can find TypeScript files, `environment.dev.ts` and `environment.prod.ts` which add
+environment specific (e.g. development, production) behavior to your application. These files can be modified as needed.
+During the build, depending on the target platform, one of these files is renamed to `environment.ts` and transpiled to JavaScript.
+
+You can import the current environment file somewhere in your TypeScript sources; this is an example from the https://github.com/oasp/oasp4js-ng2-project-seed/blob/master/app/main.ts[main.ts]:
+
+[source,javascript]
+----
+import {enableProdMode} from '@angular/core';
+import {environment} from './_env/environment';
+
+if (environment.enableProdMode) {
+  enableProdMode();
+}
+----
+
 == Frequently Asked Questions
 
 === [[prerequisites]]How to install the prerequisites?
