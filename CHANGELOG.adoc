@@ -1,3 +1,9 @@
+==== 1.0.2
+* Migration to Angular 2.3.0
+* `Typings` removed in favor of npm's `@types`
+* Changes in component's styles and templates (during `gulp serve`) do not trigger transpilation any more
+* HTTP connections to the backend via the reverse proxy are ended when any error occurs
+
 ==== 1.0.1 (11-10-2016)
 * Migration to Angular 2.0.2
 * Migration to gulp-typescript 3.0.2
