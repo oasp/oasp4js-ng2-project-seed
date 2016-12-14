@@ -74,6 +74,7 @@ var
         res.writeHead(500, {
           'Content-Type': 'text/plain'
         });
+        res.end('[Proxy] Error response received');
         console.error('[Proxy] Error response received: ', error);
       },
 
@@ -322,6 +323,21 @@ gulp.task('reload-browser-after-processing-main-html', ['process-main-html-and-c
   done();
 });
 
+gulp.task('reload-browser-after-copying-templates', ['copy-templates'], function (done) {
+  browserSync.reload();
+  done();
+});
+
+gulp.task('reload-browser-after-compiling-component-less-styles', ['compile-component-less-styles-and-copy-them'], function (done) {
+  browserSync.reload();
+  done();
+});
+
+gulp.task('reload-browser-after-compiling-component-sass-styles', ['compile-component-sass-styles-and-copy-them'], function (done) {
+  browserSync.reload();
+  done();
+});
+
 gulp.task('build', ['transpile-ts-to-js', 'process-main-html-and-copy-it', 'compile-main-less-and-copy-it', 'compile-main-sass-and-copy-it', 'copy-bootstrap-fonts', 'copy-favicon-icon', 'copy-images', 'copy-fonts']);
 
 gulp.task('serve', ['build'], function () {
@@ -333,7 +349,10 @@ gulp.task('serve', ['build'], function () {
     })
   );
 
-  gulp.watch([config.tsSources, config.templateSources, config.lessComponentSources, config.sassComponentSources], ['reload-browser-after-transpilation']);
+  gulp.watch([config.tsSources, config.sassComponentSources], ['reload-browser-after-transpilation']);
+  gulp.watch([config.templateSources], ['reload-browser-after-copying-templates']);
+  gulp.watch([config.lessComponentSources], ['reload-browser-after-compiling-component-less-styles']);
+  gulp.watch([config.sassComponentSources], ['reload-browser-after-compiling-component-sass-styles']);
   gulp.watch([config.lessSourcesExceptComponentOnes], ['compile-main-less-and-copy-it']);
   gulp.watch([config.sassSourcesExceptComponentOnes], ['compile-main-sass-and-copy-it']);
   gulp.watch([config.mainHtmlPath], ['reload-browser-after-processing-main-html']);
