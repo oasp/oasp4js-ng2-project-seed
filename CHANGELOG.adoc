@@ -1,5 +1,7 @@
 ==== 1.0.2
-* Migration to Angular 2.3.0
+* Integration of ng-bootstrap 1.0.0-alpha.14
+* Migration to Bootstrap 4.0.0-alpha.5
+* Migration to Angular 2.3.1
 * `Typings` removed in favor of npm's `@types`
 * Changes in component's styles and templates (during `gulp serve`) do not trigger transpilation any more
 * HTTP connections to the backend via the reverse proxy are ended when any error occurs
