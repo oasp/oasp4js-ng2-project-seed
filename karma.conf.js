@@ -51,6 +51,7 @@ module.exports = function(config) {
       {pattern: 'node_modules/systemjs-plugin-text/text.js', included: false, watched: false},
       // lodash
       {pattern: 'node_modules/lodash/**/*.js', included: false, watched: false},
+      {pattern: 'node_modules/@ng-bootstrap/ng-bootstrap/**/*.js', included: false, watched: false},
 
       {pattern: 'systemjs.config.js', included: false, watched: false},
       'karma-test-shim.js',

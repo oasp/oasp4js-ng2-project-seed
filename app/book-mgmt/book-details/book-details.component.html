@@ -1,33 +1,27 @@
-<section class="book-details container-fluid">
+<section class="book-details container">
   <form #bookForm="ngForm" (ngSubmit)="save()" [class.ng-submitted]="submitted" novalidate>
-    <div class="row">
-      <div class="col-md-1 col-sm-3 col-xs-4 form-label">
-        <label for="title">Title:</label>
+    <div class="form-group row" [class.has-danger]="isFieldInvalid('titleField')">
+      <label for="title" class="col-lg-1 col-form-label">Title:</label>
+      <div class="col-lg-4">
+        <input id="title" name="titleField" type="text" [(ngModel)]="currentBook.title"
+               class="form-control form-control-danger" required maxlength="50">
       </div>
-      <div class="col-md-3 col-sm-5 col-xs-6">
-        <input id="title" name="titleField" type="text" [(ngModel)]="currentBook.title" required maxlength="50">
-        <span class="error-msg">
-          {{ getErrorMessageOfField('titleField') }}
-        </span>
+      <div class="col-lg-7 form-control-feedback">{{ getErrorMessageOfField('titleField') }}</div>
+    </div>
+
+    <div class="form-group row has-danger" [class.has-danger]="isFieldInvalid('authorField')">
+      <label for="author" class="col-lg-1 col-form-label">Author:</label>
+      <div class="col-lg-4">
+        <input id="author" name="authorField" type="text" [(ngModel)]="currentBook.author"
+               class="form-control form-control-danger" required maxlength="15">
       </div>
+      <div class="col-lg-7 form-control-feedback">{{ getErrorMessageOfField('authorField') }}</div>
     </div>
 
     <div class="row">
-      <div class="col-md-1 col-sm-3 col-xs-4 form-label">
-        <label for="author">Author:</label>
+      <div class="col-lg-1">
       </div>
-      <div class="col-md-3 col-sm-5 col-xs-6">
-        <input id="author" name="authorField" type="text" [(ngModel)]="currentBook.author" required maxlength="15">
-        <span class="error-msg">
-          {{ getErrorMessageOfField('authorField') }}
-        </span>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-md-1 col-sm-3 col-xs-4">
-      </div>
-      <div class="col-md-3 col-sm-5 col-xs-6">
+      <div class="col-lg-4">
         <button type="submit" class="btn btn-primary">Save</button>
       </div>
     </div>

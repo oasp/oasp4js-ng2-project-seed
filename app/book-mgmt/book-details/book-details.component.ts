@@ -46,11 +46,15 @@ export class BookDetailsComponent implements OnInit {
   }
 
   getErrorMessageOfField(fieldName: string): string {
-    const fieldControl: AbstractControl = this.currentForm.form.get(fieldName);
-
-    if (fieldControl && fieldControl.invalid && (fieldControl.touched || this.submitted )) {
+    if (this.isFieldInvalid(fieldName)) {
+      const fieldControl: AbstractControl = this.currentForm.form.get(fieldName);
       return BookDetailsComponent.createErrorMessage(fieldControl.errors);
     }
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    const fieldControl: AbstractControl = this.currentForm.form.get(fieldName);
+    return fieldControl && fieldControl.invalid && (fieldControl.touched || this.submitted);
   }
 
   ngOnInit(): void {

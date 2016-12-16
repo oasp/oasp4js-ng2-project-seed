@@ -27,7 +27,8 @@
 
       // other libraries
       'rxjs': 'npm:rxjs',
-      'lodash': 'npm:lodash'
+      'lodash': 'npm:lodash',
+      '@ng-bootstrap/ng-bootstrap': 'node_modules/@ng-bootstrap/ng-bootstrap/bundles/ng-bootstrap.js'
     },
     // packages tells the System loader how to load when no filename and/or no extension
     packages: {

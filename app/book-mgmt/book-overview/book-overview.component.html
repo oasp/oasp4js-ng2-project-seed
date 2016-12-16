@@ -4,12 +4,14 @@
   </section>
   <section [hidden]="!thereAreBooksToDisplay()">
     <table class="table table-striped">
-      <tbody>
+      <thead>
       <tr>
         <th>Author</th>
         <th>Title</th>
         <th>&nbsp;</th>
       </tr>
+      </thead>
+      <tbody>
       <tr *ngFor="let book of currentBooks">
         <td>{{book.author}}</td>
         <td>{{book.title}}</td>
