@@ -12,7 +12,7 @@ testing and building Angular 2 applications.
 You need a Git client, the https://nodejs.org/[Node.js] platform (including its package manager - https://www.npmjs.com/[npm]) and http://gulpjs.com/[Gulp] to make use of the project seed.
 It is highly recommended to use the following versions:
 
-* Node.js 5.0.0
+* Node.js 5.12.0
 * npm 3.3.6
 * Gulp 3.9.1
 
@@ -53,7 +53,7 @@ The OASP4JS Angular 2 Project Seed offers developers a few Gulp tasks which supp
 gulp build
 ....
 
-Transpiles your TypeScript sources into JavaScript, processes http://lesscss.org/[Less] files into CSS ones,
+Transpiles your TypeScript sources into JavaScript, processes http://lesscss.org/[Less] / http://sass-lang.com/[Sass] files into CSS ones,
 copies HTML files, images, fonts, etc. to the temporary directory (which defaults to `.tmp`).
 
 ....
