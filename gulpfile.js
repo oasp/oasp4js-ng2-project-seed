@@ -26,6 +26,7 @@ var
   cleanCss = require('gulp-clean-css'),
   rename = require('gulp-rename'),
   remapIstanbul = require('remap-istanbul/lib/gulpRemapIstanbul'),
+  karmaParseConfig = require('karma/lib/config').parseConfig,
 
   htmlMin = require('gulp-htmlmin'),
   htmlMinConfig = {
@@ -433,8 +434,10 @@ gulp.task('test', gulpSync.sync(['lint', 'transpile-ts-to-js-4-tests']), functio
 });
 
 gulp.task('generate-coverage-report', gulpSync.sync(['clean', 'transpile-ts-to-js-4-coverage']), function (done) {
-  var karmaCoverageConfig = {
-        configFile: __dirname + '/karma.conf.js',
+  var karmaConfigPath = __dirname + '/karma.conf.js',
+      karmaConfig = karmaParseConfig(karmaConfigPath),
+      karmaCoverageConfig = {
+        configFile: karmaConfigPath,
         singleRun: true,
         autoWatch: false,
         browsers: ['PhantomJS'],
@@ -453,6 +456,8 @@ gulp.task('generate-coverage-report', gulpSync.sync(['clean', 'transpile-ts-to-j
 
   karmaCoverageConfig.preprocessors = {};
   karmaCoverageConfig.preprocessors[filesToBeInstrumented] = ['coverage'];
+  karmaCoverageConfig.reporters = ['coverage'].concat(karmaConfig.reporters);
+  karmaCoverageConfig.plugins = ['karma-coverage'].concat(karmaConfig.plugins);
 
   new Server(karmaCoverageConfig, done).start();
 });
