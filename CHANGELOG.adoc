@@ -1,4 +1,9 @@
-==== 1.0.2
+==== 1.0.3 (24-01-2017)
+* Migration to Bootstrap 4.0.0-alpha.6,
+* Bumped to Angular 2.4.4, ng-bootstrap 1.0.0-alpha.18, Typescript 2.1.5
+* code coverage added (new gulp task `test:coverage`)
+
+==== 1.0.2 (20-12-2016)
 * Integration of ng-bootstrap 1.0.0-alpha.14
 * Migration to Bootstrap 4.0.0-alpha.5
 * Migration to Angular 2.3.1
