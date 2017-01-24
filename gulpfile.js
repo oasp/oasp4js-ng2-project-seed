@@ -25,6 +25,8 @@ var
   gulpIf = require('gulp-if'),
   cleanCss = require('gulp-clean-css'),
   rename = require('gulp-rename'),
+  remapIstanbul = require('remap-istanbul/lib/gulpRemapIstanbul'),
+  karmaParseConfig = require('karma/lib/config').parseConfig,
 
   htmlMin = require('gulp-htmlmin'),
   htmlMinConfig = {
@@ -35,16 +37,20 @@ var
 
 // helper functions
   transpileTsToJs = function (sourceRoot) {
-    var tsResult = gulp.src(config.tsSources)
-      .pipe(sourceMaps.init())
-      .pipe(tsProject());
+    var tsResult = gulp.src('./' + config.tsSources, {base: '.'})
+          .pipe(sourceMaps.init())
+          .pipe(tsProject()),
+        sourceMapOptions = {
+            includeContent: false
+        };
+
+    if (sourceRoot) {
+        sourceMapOptions.sourceRoot = sourceRoot;
+    }
 
     return tsResult.js
-      .pipe(sourceMaps.write('.', {
-        includeContent: false,
-        sourceRoot: sourceRoot
-      }))
-      .pipe(gulp.dest(config.transpiledAppDir));
+      .pipe(sourceMaps.write('.', sourceMapOptions))
+      .pipe(gulp.dest(config.tmpDir));
   },
 
   runKarmaTestsAndWatchForChanges = function (headlessBrowser, done) {
@@ -143,6 +149,7 @@ var
       prodDir = (externalConfig.paths && externalConfig.paths.dist) || 'dist',
       imagesDir = (externalConfig.paths && externalConfig.paths.img) || 'images',
       fontsDir = (externalConfig.paths && externalConfig.paths.fonts) || 'fonts',
+      testOutputDir = (externalConfig.paths && externalConfig.paths.testOutput) || 'test-output',
       mainLessPath = 'styles.less',
       mainSassPath = 'styles.scss',
       lessComponentSources = appDir + '/**/*.component.less',
@@ -168,6 +175,7 @@ var
       imageSources: appDir + '/**/' + imagesDir + '/**/*.*',
       fontSources: appDir + '/**/' + fontsDir + '/**/*.*',
       cssDir: devDir + '/' + 'css',
+      testOutputDir: testOutputDir,
       fontsInCurrentDistDir: function () {
         return currentDistDir() + '/' + fontsDir;
       },
@@ -306,11 +314,15 @@ gulp.task('copy-env-file', function () {
 });
 
 gulp.task('transpile-ts-to-js', ['copy-templates', 'copy-env-file', 'compile-component-less-styles-and-copy-them', 'compile-component-sass-styles-and-copy-them'], function () {
-  return transpileTsToJs('/' + config.srcDir);
+  return transpileTsToJs('.');
 });
 
 gulp.task('transpile-ts-to-js-4-tests', ['copy-templates', 'copy-env-file', 'compile-component-less-styles-and-copy-them', 'compile-component-sass-styles-and-copy-them'], function () {
-  return transpileTsToJs('/base/' + config.srcDir);
+  return transpileTsToJs('/base');
+});
+
+gulp.task('transpile-ts-to-js-4-coverage', ['copy-templates', 'copy-env-file', 'compile-component-less-styles-and-copy-them', 'compile-component-sass-styles-and-copy-them'], function () {
+  return transpileTsToJs();
 });
 
 gulp.task('reload-browser-after-transpilation', ['transpile-ts-to-js'], function (done) {
@@ -400,7 +412,7 @@ gulp.task('serve:dist', ['build:dist'], function () {
 });
 
 gulp.task('clean', function () {
-  return gulp.src([config.tmpDir, config.distDir], {read: false})
+  return gulp.src([config.tmpDir, config.distDir, config.testOutputDir], {read: false})
     .pipe(clean({force: true}));
 });
 
@@ -419,6 +431,46 @@ gulp.task('test', gulpSync.sync(['lint', 'transpile-ts-to-js-4-tests']), functio
     singleRun: true,
     autoWatch: false
   }, done).start();
+});
+
+gulp.task('generate-coverage-report', gulpSync.sync(['clean', 'transpile-ts-to-js-4-coverage']), function (done) {
+  var karmaConfigPath = __dirname + '/karma.conf.js',
+      karmaConfig = karmaParseConfig(karmaConfigPath),
+      karmaCoverageConfig = {
+        configFile: karmaConfigPath,
+        singleRun: true,
+        autoWatch: false,
+        browsers: ['PhantomJS'],
+        coverageReporter: {
+          dir: config.testOutputDir,
+          reporters: [{
+            type: 'json',
+            subdir: '.',
+            file: 'coverage-final.json'
+          }]
+        }
+      },
+      // source files, that you wanna generate coverage for do not include tests or libraries (these files will be
+      // instrumented by Istanbul)
+      filesToBeInstrumented = config.transpiledAppDir + '/**/!(*templates|*spec|*mock).js';
+
+  karmaCoverageConfig.preprocessors = {};
+  karmaCoverageConfig.preprocessors[filesToBeInstrumented] = ['coverage'];
+  karmaCoverageConfig.reporters = ['coverage'].concat(karmaConfig.reporters);
+  karmaCoverageConfig.plugins = ['karma-coverage'].concat(karmaConfig.plugins);
+
+  new Server(karmaCoverageConfig, done).start();
+});
+
+gulp.task('test:coverage', ['generate-coverage-report'], function (done) {
+  return gulp.src(config.testOutputDir + '/coverage-final.json')
+    .pipe(remapIstanbul({
+      basePath: '.',
+      reports: {
+        json: config.testOutputDir + '/coverage-remapped.json',
+        html: config.testOutputDir + '/report-html'
+      }
+    }))
 });
 
 gulp.task('lint', function () {
