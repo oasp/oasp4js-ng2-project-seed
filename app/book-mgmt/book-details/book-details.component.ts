@@ -5,9 +5,49 @@ import {NgForm, AbstractControl} from '@angular/forms';
 
 @Component({
   selector: 'book-details',
-  template: require('./book-details.component.html!text'),
-  styles: [require('./book-details.component.css!text')]
-} as Component)
+  // template: require('./book-details.component.html!text'),
+  template:
+    `
+<section class="book-details container">
+  <form #bookForm="ngForm" (ngSubmit)="save()" [class.ng-submitted]="submitted" novalidate>
+    <div class="form-group row" [class.has-danger]="isFieldInvalid('titleField')">
+      <label for="title" class="col-lg-1 col-form-label">Title:</label>
+      <div class="col-lg-4">
+        <input id="title" name="titleField" type="text" [(ngModel)]="currentBook.title"
+               class="form-control form-control-danger" required maxlength="50">
+      </div>
+      <div class="col-lg-7 form-control-feedback">{{ getErrorMessageOfField('titleField') }}</div>
+    </div>
+
+    <div class="form-group row has-danger" [class.has-danger]="isFieldInvalid('authorField')">
+      <label for="author" class="col-lg-1 col-form-label">Author:</label>
+      <div class="col-lg-4">
+        <input id="author" name="authorField" type="text" [(ngModel)]="currentBook.author"
+               class="form-control form-control-danger" required maxlength="15">
+      </div>
+      <div class="col-lg-7 form-control-feedback">{{ getErrorMessageOfField('authorField') }}</div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-1">
+      </div>
+      <div class="col-lg-4">
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </form>
+</section>
+`,
+  // styles: [require('./book-details.component.css!text')]
+  styles: [`
+:host .row {
+    margin-top: 20px;
+  }
+:host .form-label {
+    text-align: right;
+  }
+`]
+})
 export class BookDetailsComponent implements OnInit {
   @ViewChild('bookForm') currentForm: NgForm;
 

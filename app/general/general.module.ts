@@ -8,6 +8,6 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
   imports: [CommonModule, RouterModule, NgbModule],
   declarations: [AppNavComponent],
   exports: [AppNavComponent]
-} as NgModule)
+})
 export class GeneralModule {
 }

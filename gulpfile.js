@@ -117,12 +117,10 @@ var
     moduleResolution: 'node',
     emitDecoratorMetadata: true,
     experimentalDecorators: true,
-    removeComments: false,
     noImplicitAny: true,
     suppressImplicitAnyIndexErrors: true,
-    typeRoots: [
-      './node_modules/@types/'
-    ],
+    lib: ['es2015', 'dom'],
+
     // these settings are specific to gulp-typescript
     declaration: false,
     typescript: currentTsTranspiler
@@ -400,7 +398,7 @@ gulp.task('serve:dist', ['build:dist'], function () {
 });
 
 gulp.task('clean', function () {
-  return gulp.src([config.tmpDir, config.distDir], {read: false})
+  return gulp.src([config.tmpDir, config.distDir, 'app/**/*.js', 'app/**/*.js.map', 'aot'], {read: false})
     .pipe(clean({force: true}));
 });
 

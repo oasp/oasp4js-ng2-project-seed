@@ -12,6 +12,6 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
   declarations: [BookOverviewComponent, BookDetailsComponent],
   exports: [BookOverviewComponent, BookDetailsComponent],
   providers: [BookService]
-} as NgModule)
+})
 export class BookMgmtModule {
 }

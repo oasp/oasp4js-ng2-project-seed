@@ -21,6 +21,6 @@ const appRoutes: Routes = [
     redirectTo: '/book-mgmt/books',
     pathMatch: 'full'
   }
-] as Routes;
+];
 
 export const routing: ModuleWithProviders = RouterModule.forRoot(appRoutes);
