@@ -465,7 +465,9 @@ gulp.task('test:coverage', ['generate-coverage-report'], function (done) {
       basePath: '.',
       reports: {
         json: config.testOutputDir + '/coverage-remapped.json',
-        html: config.testOutputDir + '/report-html'
+        html: config.testOutputDir + '/report-html',
+        cobertura: config.testOutputDir + '/coverage-cobertura.xml',
+        lcovonly: config.testOutputDir + '/lcov.info'
       }
     }))
 });
