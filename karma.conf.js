@@ -4,16 +4,13 @@ module.exports = function(config) {
   var appSrcBase = 'app/';            // app source TS files
   var appAssets  = '/base/.tmp/app/'; // component assets fetched by Angular's compiler
 
-  var testBase    = 'testing/';       // transpiled test JS and map files
-  var testSrcBase = 'testing/';       // test source TS files
-
   config.set({
     basePath: '',
     frameworks: ['jasmine'],
     plugins: [
-      require('karma-jasmine'),
-      require('karma-chrome-launcher'),
-      require('karma-phantomjs-launcher')
+      'karma-jasmine',
+      'karma-chrome-launcher',
+      'karma-phantomjs-launcher'
     ],
 
     files: [

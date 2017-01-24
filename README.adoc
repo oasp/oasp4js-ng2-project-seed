@@ -108,6 +108,12 @@ gulp test:tdd:debug
 In addition to `gulp test:tdd` allows you to debug your application while testing. Therefore the specs are executed
 against the Chrome browser.
 
+....
+gulp test:coverage
+....
+
+In addition to `gulp test` code coverage reports (`HTML`, `Cobertura` and `lcov`) are generated in the `test-output` directory.
+
 === Miscellaneous
 
 ....
