@@ -123,12 +123,9 @@ var
     moduleResolution: 'node',
     emitDecoratorMetadata: true,
     experimentalDecorators: true,
-    removeComments: false,
     noImplicitAny: true,
     suppressImplicitAnyIndexErrors: true,
-    typeRoots: [
-      './node_modules/@types/'
-    ],
+    lib: ['es2015', 'dom'],
     // these settings are specific to gulp-typescript
     declaration: false,
     typescript: currentTsTranspiler
