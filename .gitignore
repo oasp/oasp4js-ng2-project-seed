@@ -14,6 +14,7 @@ test-output
 dist
 environment.ts
 
+!systemjs-aot.config.js
 !karma*.js
 !gulp*.js
 !protractor*.js
