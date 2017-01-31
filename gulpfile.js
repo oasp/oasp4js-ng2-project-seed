@@ -26,6 +26,7 @@ var
   cleanCss = require('gulp-clean-css'),
   rename = require('gulp-rename'),
   remapIstanbul = require('remap-istanbul/lib/gulpRemapIstanbul'),
+  ngc = require('gulp-ngc'),
   karmaParseConfig = require('karma/lib/config').parseConfig,
 
   htmlMin = require('gulp-htmlmin'),
@@ -37,7 +38,7 @@ var
 
 // helper functions
   transpileTsToJs = function (sourceRoot) {
-    var tsResult = gulp.src('./' + config.tsSources, {base: '.'})
+    var tsResult = gulp.src(['./' + config.tsSources, '!./app/main-aot.ts'], {base: '.'})
           .pipe(sourceMaps.init())
           .pipe(tsProject()),
         sourceMapOptions = {
@@ -398,6 +399,32 @@ gulp.task('build-systemjs-self-executable-js', ['transpile-ts-to-js'], function 
   }
 });
 
+gulp.task('systemjs-rollup', gulpSync.sync(['ngc', ['copy-templates', 'compile-component-less-styles-and-copy-them', 'compile-component-sass-styles-and-copy-them']]), function (done) {
+  oasp4js.currentAppDir = config.transpiledAppDir;
+  try {
+    new Builder('.', './systemjs-aot.config.js')
+      .buildStatic(
+        polyfillPaths.join(' + ') + ' + ' + config.transpiledAppDir + '/main-aot.js',
+        'dist/main.js',
+        {
+          encodeNames: false,
+          mangle: false,
+          // minify: true,
+          rollup: true,
+          // runtime: false
+          sourceMaps: true
+        })
+      .then(function () {
+        done();
+      })
+      .catch(function (error) {
+        done(error);
+      });
+  } catch (error) {
+    done(error);
+  }
+});
+
 gulp.task('build:dist', gulpSync.sync([
   ['set-prod-config'],
   ['build-systemjs-self-executable-js', 'compile-main-less-and-copy-it', 'compile-main-sass-and-copy-it', 'copy-bootstrap-fonts', 'copy-favicon-icon', 'copy-images', 'copy-fonts'],
@@ -409,7 +436,7 @@ gulp.task('serve:dist', ['build:dist'], function () {
 });
 
 gulp.task('clean', function () {
-  return gulp.src([config.tmpDir, config.distDir, config.testOutputDir], {read: false})
+  return gulp.src([config.tmpDir, config.distDir, config.testOutputDir, 'app/**/*.js', 'app/**/*.js.map', 'aot'], {read: false})
     .pipe(clean({force: true}));
 });
 
@@ -432,24 +459,24 @@ gulp.task('test', gulpSync.sync(['lint', 'transpile-ts-to-js-4-tests']), functio
 
 gulp.task('generate-coverage-report', gulpSync.sync(['clean', 'transpile-ts-to-js-4-coverage']), function (done) {
   var karmaConfigPath = __dirname + '/karma.conf.js',
-      karmaConfig = karmaParseConfig(karmaConfigPath),
-      karmaCoverageConfig = {
-        configFile: karmaConfigPath,
-        singleRun: true,
-        autoWatch: false,
-        browsers: ['PhantomJS'],
-        coverageReporter: {
-          dir: config.testOutputDir,
-          reporters: [{
-            type: 'json',
-            subdir: '.',
-            file: 'coverage-final.json'
-          }]
-        }
-      },
-      // source files, that you wanna generate coverage for do not include tests or libraries (these files will be
-      // instrumented by Istanbul)
-      filesToBeInstrumented = config.transpiledAppDir + '/**/!(*templates|*spec|*mock).js';
+    karmaConfig = karmaParseConfig(karmaConfigPath),
+    karmaCoverageConfig = {
+      configFile: karmaConfigPath,
+      singleRun: true,
+      autoWatch: false,
+      browsers: ['PhantomJS'],
+      coverageReporter: {
+        dir: config.testOutputDir,
+        reporters: [{
+          type: 'json',
+          subdir: '.',
+          file: 'coverage-final.json'
+        }]
+      }
+    },
+    // source files, that you wanna generate coverage for do not include tests or libraries (these files will be
+    // instrumented by Istanbul)
+    filesToBeInstrumented = config.transpiledAppDir + '/**/!(*templates|*spec|*mock).js';
 
   karmaCoverageConfig.preprocessors = {};
   karmaCoverageConfig.preprocessors[filesToBeInstrumented] = ['coverage'];
@@ -459,7 +486,7 @@ gulp.task('generate-coverage-report', gulpSync.sync(['clean', 'transpile-ts-to-j
   new Server(karmaCoverageConfig, done).start();
 });
 
-gulp.task('test:coverage', ['generate-coverage-report'], function (done) {
+gulp.task('test:coverage', gulpSync.sync(['lint', 'generate-coverage-report']), function (done) {
   return gulp.src(config.testOutputDir + '/coverage-final.json')
     .pipe(remapIstanbul({
       basePath: '.',
@@ -481,6 +508,10 @@ gulp.task('lint', function () {
       emitError: true,
       summarizeFailureOutput: true
     }))
+});
+
+gulp.task('ngc', ['clean'], function () {
+  return ngc('tsconfig-aot.json');
 });
 
 gulp.task('default', gulpSync.sync(['clean', 'serve']));

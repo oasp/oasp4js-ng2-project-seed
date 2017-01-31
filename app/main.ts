@@ -1,3 +1,4 @@
+/// <reference path="declarations.d.ts" />
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {AppModule} from './app.module';
 import {Type, enableProdMode} from '@angular/core';

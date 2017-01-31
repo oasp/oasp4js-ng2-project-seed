@@ -11,6 +11,6 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
   imports: [BrowserModule, BookMgmtModule, GeneralModule, routing, NgbModule.forRoot()],
   declarations: [AppComponent],
   bootstrap: [AppComponent]
-} as NgModule)
+})
 export class AppModule {
 }

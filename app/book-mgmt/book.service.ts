@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import * as _ from 'lodash';
 
 @Injectable()
 export class BookService {
@@ -9,7 +8,7 @@ export class BookService {
   findOne(id: number): Book {
     const originalBook = this.findById(id);
     if (originalBook) {
-      return _.cloneDeep(originalBook);
+      return Book.from(originalBook);
     }
   }
 
@@ -43,6 +42,13 @@ export class Book {
   private _id: number;
   private _author: string;
   private _title: string;
+
+  static from(anotherBook: Book): Book {
+    const newBook: Book = new Book(anotherBook.author, anotherBook.title);
+    newBook.id = anotherBook.id;
+
+    return newBook;
+  }
 
   constructor(authors?: string, title?: string) {
     this._author = authors;

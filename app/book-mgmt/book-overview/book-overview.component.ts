@@ -1,10 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {BookService, Book} from '../book.service';
+import * as template from './book-overview.component.html!text';
+import {asString} from '../../general/util/as-string';
+
 
 @Component({
   selector: 'book-overview',
-  template: require('./book-overview.component.html!text')
-} as Component)
+  template: asString(template)
+})
 export class BookOverviewComponent implements OnInit {
   currentBooks: Book[];
 
